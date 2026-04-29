@@ -1,0 +1,23 @@
+name: Deploy UAT
+
+on:
+  push:
+    branches:
+      - uat
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: uat
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend
+        run: dotnet publish -c Release -o out
+
+      - name: Deploy to UAT server
+        run: |
+          echo "Deploying to UAT..."
+          # Example:
+          # scp / rsync / Azure / AWS deploy
