@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, uat]
+  pull_request:
+    branches: [uat, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # .NET Setup
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore .NET
+        run: dotnet restore
+
+      - name: Build .NET
+        run: dotnet build --no-restore
+
+      - name: Test .NET
+        run: dotnet test --no-build
+
+      # Angular Setup
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: Install Angular deps
+        run: |
+          cd ClientApp
+          npm install
+
+      - name: Build Angular
+        run: |
+          cd ClientApp
+          npm run build --prod
