@@ -11,36 +11,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      # Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
+      # ------------------------
       # .NET Setup
+      # ------------------------
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
 
-      - name: Restore .NET
-        run: dotnet restore
+      - name: Restore .NET dependencies
+        run: dotnet restore ./AngularApp1.Server/AngularApp1.Server.csproj
 
-      - name: Build .NET
-        run: dotnet build --no-restore
+      - name: Build .NET project
+        run: dotnet build --no-restore --configuration Release
 
-      - name: Test .NET
-        run: dotnet test --no-build
+      - name: Run .NET tests
+        run: dotnet test --no-build --configuration Release
 
+      # ------------------------
       # Angular Setup
-      - name: Setup Node
+      # ------------------------
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: '17'
 
-      - name: Install Angular deps
-        run: |
-          cd ClientApp
-          npm install
+      - name: Install Angular dependencies
+        working-directory: ./angularapp1.client   # 🔁 change if different
+        run: npm install
 
-      - name: Build Angular
-        run: |
-          cd ClientApp
-          npm run build --prod
+      - name: Build Angular app
+        working-directory: ./angularapp1.client
+        run: npm run build -- --configuration production
+
+      # ------------------------
+      # Publish .NET (with Angular)
+      # ------------------------
+      - name: Publish .NET app
+        run: dotnet publish -c Release -o publish
+
+      # ------------------------
+      # Upload artifact (optional but useful)
+      # ------------------------
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: publish
