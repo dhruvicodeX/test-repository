@@ -52,7 +52,7 @@ jobs:
       # Publish .NET (with Angular)
       # ------------------------
       - name: Publish .NET app
-        run: dotnet publish AngularApp1.slnx -c Release -o out
+        run: dotnet publish ./AngularApp1.Server/AngularApp1.Server.csproj -c Release -o out
 
       # ------------------------
       # Upload artifact (optional but useful)
